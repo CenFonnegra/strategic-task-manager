@@ -1,12 +1,16 @@
 
 interface ButtonProps {
     text: string;
-    onClick: () => void;
+    onClick?: () => void;
+    type?: "button" | "submit";
 }
 
-function Button({ text, onClick }: ButtonProps) {
+function Button({ text, onClick, type ="button" }: ButtonProps) {
     return (
-        <button onClick={onClick}>
+        <button
+            type={type}
+            onClick={onClick}
+            >
             {text}
         </button>
     );
