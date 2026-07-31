@@ -1,18 +1,39 @@
 import Button from "../components/Button";
 import { useState } from "react";
 
+
 function LoginPage() {
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+
+  function validateLogin(): boolean {
 
     if (!email) {
       setError("El correo es obligatorio");
-      return;
+      return false;
     }
-
+  
+    if (!email.includes("@")) {
+        setError("El correo debe contener @");
+        return false;
+    }
+  
+    if (!email.includes(".")) {
+      setError("El correo debe contener un dominio válido");
+      return false ;
+  }
+  
     if (!password) {
       setError("La contraseña es obligatoria");
-      return;
+      return false;
+    }
+  
+    return true;
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!validateLogin()) {
+        return;
     }
 
     setError("");
@@ -23,6 +44,9 @@ function LoginPage() {
 
         console.log("Email:", email);
         console.log("Password:", password);
+
+        setEmail("");
+        setPassword("");
     }, 2000);
 
   }
@@ -48,7 +72,12 @@ function LoginPage() {
             id="email"
             type="email"
             placeholder="Ingresa tu correo"
-            onChange={(event) => setEmail(event.target.value)}
+            value={email}
+            onChange={(event) =>{
+              setEmail(event.target.value)
+              setError("");
+            }}  
+            
           />
         </div>
 
@@ -58,8 +87,10 @@ function LoginPage() {
             id="password"
             type="password"
             placeholder="Ingresa tu contraseña"
+            value={password}
             onChange={(event) => {
               setPassword(event.target.value);
+              setError("");
             }}
           />
         </div>
