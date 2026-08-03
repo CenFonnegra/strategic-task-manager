@@ -1,5 +1,8 @@
 import Button from "../components/Button";
 import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 
 function LoginPage() {
@@ -29,7 +32,7 @@ function LoginPage() {
     return true;
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!validateLogin()) {
@@ -39,15 +42,24 @@ function LoginPage() {
     setError("");
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+       await signInWithEmailAndPassword(auth, email, password);
+
+       setEmail("");
+       setPassword("");
+
+       navigate("/dashboard");
+
+    } catch (error) {
+          if (error instanceof Error){
+                console.log(error.message);
+          }
+          
+          setError("Correo o contraseña inválidos");
+    } finally {
         setLoading(false);
+    }
 
-        console.log("Email:", email);
-        console.log("Password:", password);
-
-        setEmail("");
-        setPassword("");
-    }, 2000);
 
   }
 
@@ -58,6 +70,8 @@ function LoginPage() {
   const [error, setError] = useState("");
 
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   return (
     <main>
@@ -105,4 +119,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default LoginPage
