@@ -6,7 +6,10 @@ import {
      collection, 
      query, 
      where,
-    getDocs
+    getDocs,
+    doc, 
+    updateDoc, 
+    deleteDoc
  } from "firebase/firestore";
 import { useEffect } from "react";
 
@@ -23,6 +26,7 @@ function TasksPage() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
     useEffect(() => {
 
@@ -40,10 +44,10 @@ function TasksPage() {
         const loadTasks = async () => {
             try{
 
-                const snapshot = await getDocs(tasksQuery);
+            const snapshot = await getDocs(tasksQuery);
             const tasksData: Task[] = snapshot.docs.map((doc) => ({
                 id: doc.id,
-                ...(*doc.data() as Omit<Task, "id">)
+                ...(doc.data() as Omit<Task, "id">)
             }));
 
             setTasks(tasksData);
@@ -56,10 +60,37 @@ function TasksPage() {
         loadTasks();
     }, []);
 
+    //crear Tarea
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
+        if (editingTaskId) {
+            const taskRef = doc(db, "tasks", editingTaskId);
 
+            await updateDoc(taskRef, {
+                title: title,
+                description: description
+            });
+
+            setTasks((currentTasks) =>
+                currentTasks.map((task) =>
+                task.id === editingTaskId
+                    ? {
+                        ...task,
+                        title: title,
+                        description: description
+                    }
+                    : task
+
+                )
+            );
+
+            setTitle("");
+            setDescription("");
+            setEditingTaskId(null);
+
+            return;
+        }
 
         const user = auth.currentUser;
 
@@ -84,6 +115,30 @@ function TasksPage() {
             console.log("Error al creal la tarea:", error);
         }
     }
+    //Actualizar tarea
+    async function handleUpdate(task:Task) {
+        const taskRef = doc(db, "tasks", task.id);
+
+        await updateDoc(taskRef, {
+            title: task.title,
+            description: task.description
+        });
+    }
+
+    //Borrar tarea
+    async function handleDelete(task: Task) {
+        const taskRef = doc(db, "tasks", task.id);
+
+        try {
+            await deleteDoc(taskRef);
+
+            setTasks((currentTasks) =>
+            currentTasks.filter((currentTask) => currentTask.id !== task.id)
+            );
+        } catch (error) {
+            console.log("Error al eliminar la tarea:", error);
+        }
+    }
     
     return (
         <main>
@@ -102,7 +157,7 @@ function TasksPage() {
                 />
                 
                 <Button
-                    text="Crear tarea"
+                    text={editingTaskId ? "Guardar cambios" : "Crear tarea"}
                     type="submit"
                 />
             </form> 
@@ -114,6 +169,21 @@ function TasksPage() {
                     <article key={task.id}>
                         <h3>{task.title}</h3>
                         <p>{task.description}</p>
+
+                        <Button
+                            text="Editar"
+                            type="button"
+                            onClick={() => {
+                                setEditingTaskId(task.id);
+                                setTitle(task.title);
+                                setDescription(task.description);
+                            }}
+                            />
+                        <Button
+                            text="Eliminar"
+                            type="button"
+                            onClick={() => handleDelete(task)}
+                            />
                     </article>
                 ))}
             </section>
