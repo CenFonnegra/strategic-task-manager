@@ -80,7 +80,8 @@ function TasksPage() {
                     {
                         title: title,
                         description: description,
-                        userId: user.uid
+                        userId: user.uid,
+                        completed: false
                     }
                 );
             }
@@ -120,6 +121,29 @@ function TasksPage() {
         }
     }
 
+    async function handleToggleComplete(task: Task) {
+
+        const taskRef = doc(
+            db,
+            "tasks",
+            task.id
+        );
+    
+        try {
+    
+            await updateDoc(taskRef, {
+                completed: !task.completed
+            });
+    
+        } catch (error) {
+    
+            console.log(
+                "Error al actualizar el estado de la tarea:",
+                error
+            );
+        }
+    }
+
     return (
         <main>
 
@@ -149,6 +173,7 @@ function TasksPage() {
                             setDescription(task.description);
                         }}
                         onDelete={handleDelete}
+                        onToggleComplete={handleToggleComplete}
                     />
 
                 ))}

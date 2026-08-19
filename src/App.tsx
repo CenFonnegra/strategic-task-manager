@@ -9,11 +9,12 @@ import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import ProtectedRoute from "./components/ProtectedRoute";
+import type { User } from "firebase/auth";
 
 
 function App() {
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
