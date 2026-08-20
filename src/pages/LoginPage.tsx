@@ -74,47 +74,68 @@ function LoginPage() {
   const navigate = useNavigate();
 
   return (
-    <main>
-      <h1>Iniciar Sesión</h1>
-
-      {error && <p>{error}</p>}
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Correo electrónico</label>
-          <input
-            id="email"
-            type="email"
-            placeholder="Ingresa tu correo"
-            value={email}
-            onChange={(event) =>{
-              setEmail(event.target.value)
-              setError("");
-            }}  
-            
-          />
+    <main className="auth-page">
+      <section className="auth-card">
+        <div className="auth-header">
+          <h1>Strategic Task Manager</h1>
+          <p>Organiza tus tareas y alcanza tus objetivos.</p>
         </div>
-
-        <div>
-          <label htmlFor="password">Contraseña</label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Ingresa tu contraseña"
-            value={password}
-            onChange={(event) => {
-              setPassword(event.target.value);
-              setError("");
-            }}
-          />
-        </div>
-
-        <Button 
-            text= {loading ?  "Iniciando Sesión..." :  "Iniciar Sesión" } 
-            type="submit" 
-            disabled={loading}
+  
+        <h2>Iniciar sesión</h2>
+  
+        {error && (
+          <p className="auth-error">
+            {error}
+          </p>
+        )}
+  
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="email">Correo electrónico</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Ingresa tu correo"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setError("");
+              }}
             />
-      </form>
+          </div>
+  
+          <div className="form-group">
+            <label htmlFor="password">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              value={password}
+              onChange={(event) => {
+                setPassword(event.target.value);
+                setError("");
+              }}
+            />
+          </div>
+  
+          <Button
+            text={loading ? "Iniciando sesión..." : "Iniciar sesión"}
+            type="submit"
+            disabled={loading}
+          />
+        </form>
+  
+        <p className="auth-footer">
+          ¿No tienes una cuenta?{" "}
+          <button
+            type="button"
+            onClick={() => navigate("/register")}
+            className="auth-link"
+          >
+            Regístrate
+          </button>
+        </p>
+      </section>
     </main>
   );
 }

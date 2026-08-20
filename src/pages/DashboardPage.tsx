@@ -43,18 +43,26 @@ function DashboardPage() {
   return (
     <main className="tasks-page">
       <header className="dashboard-header">
-    <div>
-        <h1>Dashboard</h1>
-        <p>Bienvenido de nuevo 👋</p>
-    </div>
+        <div>
+          <h1>Dashboard</h1>
+          <p>Bienvenido de nuevo 👋</p>
+        </div>
 
-    <button onClick={handleLogout}>
-        Cerrar sesión
-    </button>
-</header>
+        <div className="dashboard-actions">
+          <button
+            className="button button-primary"
+            onClick={() => navigate("/tasks")}
+          >
+            Mis tareas
+          </button>
+
+          <button className="button button-danger" onClick={handleLogout}>
+            Cerrar sesión
+          </button>
+        </div>
+      </header>
 
       <section className="dashboard-stats">
-
         <article className="task-card">
           <h2>Total</h2>
           <p>{tasks.length}</p>
