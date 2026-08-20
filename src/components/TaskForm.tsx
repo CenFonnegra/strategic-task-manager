@@ -18,10 +18,11 @@ function TaskForm({ title, description, setTitle, setDescription, handleSubmit, 
         placeholder="Título de la tarea"
         />
 
-        <textarea
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-        />
+    <textarea
+        aria-label="Descripción"
+        value={description}
+        onChange={(event) => setDescription(event.target.value)}
+    />
         
         <Button
             text={editingTaskId ? "Guardar cambios" : "Crear tarea"}
