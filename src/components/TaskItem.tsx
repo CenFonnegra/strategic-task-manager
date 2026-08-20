@@ -11,28 +11,43 @@ interface TaskItemProps {
 function TaskItem({ task, onEdit, onDelete, onToggleComplete }: TaskItemProps) {
 
     return (
-        <article>
-            <h3>{task.title}</h3>
+        <article className={`task-card ${task.completed ? "completed" : ""}`}>
+            <div className="task-card-header">
+                <h3>{task.title}</h3>
+    
+                <span className="task-status">
+                    {task.completed ? "Completada" : "Pendiente"}
+                </span>
+            </div>
+    
             <p>{task.description}</p>
-
-            <Button
-            text="Editar"
-            type="button"
-            onClick={() => onEdit(task)}
-            />
-
-            <Button
-            text="Eliminar"
-            type="button"
-            onClick={() => onDelete(task)}
-            />
-
-            <Button
-             text={task.completed ? "Marcar como pendiente" : "Marcar como completada"}
-             type="button"
-             onClick={() => onToggleComplete(task)}
-            />
-
+    
+            <div className="task-actions">
+                <Button
+                    text="Editar"
+                    type="button"
+                    onClick={() => onEdit(task)}
+                    variant="secondary"
+                />
+    
+                <Button
+                    text="Eliminar"
+                    type="button"
+                    onClick={() => onDelete(task)}
+                    variant="danger"
+                />
+    
+                <Button
+                    text={
+                        task.completed
+                            ? "Marcar como pendiente"
+                            : "Marcar como completada"
+                    }
+                    type="button"
+                    onClick={() => onToggleComplete(task)}
+                    variant="success"
+                />
+            </div>
         </article>
     );
 }

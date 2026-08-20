@@ -145,41 +145,60 @@ function TasksPage() {
     }
 
     return (
-        <main>
-
-            <h1>Task Page</h1>
-
-            <TaskForm
-                title={title}
-                description={description}
-                setTitle={setTitle}
-                setDescription={setDescription}
-                handleSubmit={handleSubmit}
-                editingTaskId={editingTaskId}
-            />
-
-            <section>
-
-                <h2>Mis tareas</h2>
-
-                {tasks.map((task) => (
-
-                    <TaskItem
-                        key={task.id}
-                        task={task}
-                        onEdit={(task) => {
-                            setEditingTaskId(task.id);
-                            setTitle(task.title);
-                            setDescription(task.description);
-                        }}
-                        onDelete={handleDelete}
-                        onToggleComplete={handleToggleComplete}
-                    />
-
-                ))}
-
+        <main className="tasks-page">
+    
+            <header className="tasks-header">
+                <div>
+                    <h1>Mis tareas</h1>
+                    <p>Organiza y administra tus tareas de forma estratégica.</p>
+                </div>
+    
+                <span className="tasks-count">
+                    {tasks.length} {tasks.length === 1 ? "tarea" : "tareas"}
+                </span>
+            </header>
+    
+            <section className="task-form-section">
+                <h2>
+                    {editingTaskId ? "Editar tarea" : "Nueva tarea"}
+                </h2>
+    
+                <TaskForm
+                    title={title}
+                    description={description}
+                    setTitle={setTitle}
+                    setDescription={setDescription}
+                    handleSubmit={handleSubmit}
+                    editingTaskId={editingTaskId}
+                />
             </section>
-
+    
+            <section className="tasks-section">
+    
+                <div className="section-header">
+                    <h2>Mis tareas</h2>
+                </div>
+    
+                <div className="tasks-list">
+                    {tasks.map((task) => (
+    
+                        <TaskItem
+                            key={task.id}
+                            task={task}
+                            onEdit={(task) => {
+                                setEditingTaskId(task.id);
+                                setTitle(task.title);
+                                setDescription(task.description);
+                            }}
+                            onDelete={handleDelete}
+                            onToggleComplete={handleToggleComplete}
+                        />
+    
+                    ))}
+                </div>
+    
+            </section>
+    
         </main>
     );
 }
