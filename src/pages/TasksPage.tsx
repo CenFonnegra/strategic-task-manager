@@ -1,16 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../firebase";
+import { auth } from "../firebase";
 import {
-  addDoc,
-  collection,
-  query,
-  where,
-  onSnapshot,
-  doc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
+  createTask,
+  subscribeToUserTasks,
+  updateTask,
+  deleteTask,
+  toggleTaskComplete,
+} from "../services/taskService";
 import TaskItem from "../components/TaskItem";
 import TaskForm from "../components/TaskForm";
 import type { Task } from "../types/Task";
@@ -29,19 +26,7 @@ function TasksPage() {
       return;
     }
 
-    const tasksQuery = query(
-      collection(db, "tasks"),
-      where("userId", "==", user.uid)
-    );
-
-    const unsubscribe = onSnapshot(tasksQuery, (snapshot) => {
-      const tasksData: Task[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Task, "id">),
-      }));
-
-      setTasks(tasksData);
-    });
+    const unsubscribe = subscribeToUserTasks(user.uid, setTasks);
 
     return () => unsubscribe();
   }, []);
@@ -58,24 +43,10 @@ function TasksPage() {
 
     try {
       if (editingTaskId) {
-        const taskRef = doc(db, "tasks", editingTaskId);
-
-        await updateDoc(taskRef, {
-          title: title,
-          description: description,
-        });
+        await updateTask(editingTaskId, title, description);
       } else {
-        await addDoc(collection(db, "tasks"), {
-          title: title,
-          description: description,
-          userId: user.uid,
-          completed: false,
-        });
+        await createTask(title, description, user.uid);
       }
-
-      setTitle("");
-      setDescription("");
-      setEditingTaskId(null);
     } catch (error) {
       console.log("Error al guardar la tarea:", error);
     }
@@ -83,22 +54,16 @@ function TasksPage() {
 
   // Borrar tarea
   async function handleDelete(task: Task) {
-    const taskRef = doc(db, "tasks", task.id);
-
     try {
-      await deleteDoc(taskRef);
+      await deleteTask(task.id);
     } catch (error) {
       console.log("Error al eliminar la tarea:", error);
     }
   }
 
   async function handleToggleComplete(task: Task) {
-    const taskRef = doc(db, "tasks", task.id);
-
     try {
-      await updateDoc(taskRef, {
-        completed: !task.completed,
-      });
+      await toggleTaskComplete(task.id, task.completed);
     } catch (error) {
       console.log("Error al actualizar el estado de la tarea:", error);
     }

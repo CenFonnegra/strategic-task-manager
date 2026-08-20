@@ -84,4 +84,28 @@ describe("TaskItem", () => {
         expect(onDelete).toHaveBeenCalledWith(task);
     });
 
+    it("ejecuta onToggleComplete al marcar una tarea como completada", async () => {
+
+        const user = userEvent.setup();
+    
+        const onToggleComplete = vi.fn();
+    
+        render(
+            <TaskItem
+                task={task}
+                onEdit={vi.fn()}
+                onDelete={vi.fn()}
+                onToggleComplete={onToggleComplete}
+            />
+        );
+    
+        await user.click(
+            screen.getByRole("button", {
+                name: "Marcar como completada"
+            })
+        );
+    
+        expect(onToggleComplete).toHaveBeenCalledWith(task);
+    });
+
 });
