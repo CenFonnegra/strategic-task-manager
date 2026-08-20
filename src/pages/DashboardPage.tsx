@@ -12,6 +12,8 @@ function DashboardPage() {
 
   const [sendingEmail, setSendingEmail] = useState(false);
 
+  const [emailMessage, setEmailMessage] = useState("");
+
   const completedTasks = tasks.filter((task) => task.completed).length;
 
   const progress =
@@ -51,10 +53,12 @@ function DashboardPage() {
     const user = auth.currentUser;
 
     if (!user?.email) {
+      setEmailMessage("No se encontró un correo asociado a tu cuenta.");
       return;
     }
 
     setSendingEmail(true);
+    setEmailMessage("");
 
     try {
       const response = await fetch("/api/send-summary", {
@@ -74,10 +78,19 @@ function DashboardPage() {
         throw new Error(data.message);
       }
 
-      alert("Resumen enviado correctamente 📧");
+      setEmailMessage("✓ Resumen enviado correctamente 📧");
+
+      setTimeout(() => {
+        setEmailMessage("");
+      }, 2000);
     } catch (error) {
       console.error("Error enviando resumen:", error);
-      alert("No se pudo enviar el resumen");
+
+      setEmailMessage("✕ No se pudo enviar el resumen");
+
+      setTimeout(() => {
+        setEmailMessage("");
+      }, 2000);
     } finally {
       setSendingEmail(false);
     }
@@ -112,6 +125,18 @@ function DashboardPage() {
           </button>
         </div>
       </header>
+
+      {emailMessage && (
+        <div
+          className={`email-feedback ${
+            emailMessage.startsWith("✓")
+              ? "email-feedback-success"
+              : "email-feedback-error"
+          }`}
+        >
+          {emailMessage}
+        </div>
+      )}
 
       <section className="dashboard-stats">
         <article className="task-card dashboard-card-total">

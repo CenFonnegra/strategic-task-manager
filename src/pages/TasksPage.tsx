@@ -54,6 +54,14 @@ function TasksPage() {
 
   // Borrar tarea
   async function handleDelete(task: Task) {
+    const confirmed = window.confirm(
+      `¿Estás seguro de que quieres eliminar "${task.title}"?\n\nEsta acción no se puede deshacer.`
+    );
+  
+    if (!confirmed) {
+      return;
+    }
+  
     try {
       await deleteTask(task.id);
     } catch (error) {
@@ -110,19 +118,48 @@ function TasksPage() {
         </div>
 
         <div className="tasks-list">
-          {tasks.map((task) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              onEdit={(task) => {
-                setEditingTaskId(task.id);
-                setTitle(task.title);
-                setDescription(task.description);
-              }}
-              onDelete={handleDelete}
-              onToggleComplete={handleToggleComplete}
-            />
-          ))}
+          {tasks.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-state-icon">✓</div>
+
+              <h3>No tienes tareas todavía</h3>
+
+              <p>
+                Crea tu primera tarea y comienza a organizar tus objetivos de
+                forma estratégica.
+              </p>
+
+              <button
+                className="button button-primary"
+                onClick={() => {
+                  const titleInput = document.getElementById("task-title");
+                
+                  titleInput?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  });
+                
+                  titleInput?.focus();
+                }}
+              >
+                + Crear mi primera tarea
+              </button>
+            </div>
+          ) : (
+            tasks.map((task) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                onEdit={(task) => {
+                  setEditingTaskId(task.id);
+                  setTitle(task.title);
+                  setDescription(task.description);
+                }}
+                onDelete={handleDelete}
+                onToggleComplete={handleToggleComplete}
+              />
+            ))
+          )}
         </div>
       </section>
     </main>
