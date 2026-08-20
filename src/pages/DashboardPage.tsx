@@ -10,6 +10,8 @@ function DashboardPage() {
 
   const [tasks, setTasks] = useState<Task[]>([]);
 
+  const [sendingEmail, setSendingEmail] = useState(false);
+
   const completedTasks = tasks.filter((task) => task.completed).length;
 
   const progress =
@@ -45,6 +47,42 @@ function DashboardPage() {
     navigate("/login");
   }
 
+  async function handleSendSummary() {
+    const user = auth.currentUser;
+
+    if (!user?.email) {
+      return;
+    }
+
+    setSendingEmail(true);
+
+    try {
+      const response = await fetch("/api/send-summary", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          tasks: tasks,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
+      alert("Resumen enviado correctamente 📧");
+    } catch (error) {
+      console.error("Error enviando resumen:", error);
+      alert("No se pudo enviar el resumen");
+    } finally {
+      setSendingEmail(false);
+    }
+  }
+
   return (
     <main className="tasks-page">
       <header className="dashboard-header">
@@ -59,6 +97,14 @@ function DashboardPage() {
             onClick={() => navigate("/tasks")}
           >
             Mis tareas
+          </button>
+
+          <button
+            className="button button-success"
+            onClick={handleSendSummary}
+            disabled={sendingEmail}
+          >
+            {sendingEmail ? "Enviando..." : "Enviar resumen 📧"}
           </button>
 
           <button className="button button-danger" onClick={handleLogout}>
