@@ -10,6 +10,11 @@ function DashboardPage() {
 
   const [tasks, setTasks] = useState<Task[]>([]);
 
+  const completedTasks = tasks.filter((task) => task.completed).length;
+
+  const progress =
+    tasks.length === 0 ? 0 : Math.round((completedTasks / tasks.length) * 100);
+
   useEffect(() => {
     const user = auth.currentUser;
 
@@ -63,33 +68,32 @@ function DashboardPage() {
       </header>
 
       <section className="dashboard-stats">
-        <article className="task-card">
+        <article className="task-card dashboard-card-total">
           <h2>Total</h2>
           <p>{tasks.length}</p>
         </article>
 
-        <article className="task-card">
+        <article className="task-card dashboard-card-completed">
           <h2>Completadas</h2>
           <p>{tasks.filter((task) => task.completed).length}</p>
         </article>
 
-        <article className="task-card">
+        <article className="task-card dashboard-card-pending">
           <h2>Pendientes</h2>
           <p>{tasks.filter((task) => !task.completed).length}</p>
         </article>
 
-        <article className="task-card">
+        <article className="task-card dashboard-card-progress">
           <h2>Progreso</h2>
-          <p>
-            {tasks.length === 0
-              ? 0
-              : Math.round(
-                  (tasks.filter((task) => task.completed).length /
-                    tasks.length) *
-                    100
-                )}
-            %
-          </p>
+
+          <p>{progress}%</p>
+
+          <div className="progress-bar">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
         </article>
       </section>
     </main>
